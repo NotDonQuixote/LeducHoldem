@@ -7,7 +7,7 @@ class Card:
         
 class Deck:
     def __init__ (self, cards):
-        self.cards = {}
+        self.cards = cards
     
     def generateDeck(self):
         suits = ['Hearts', 'Spades']
@@ -19,10 +19,13 @@ class Deck:
                 
         return
 
+class game():
+    def __init__(self):
+        self.deck = Deck({})
+        self.deck.generateDeck()
 
-test = Deck({})
-test.generateDeck()
+    def deal():
+        pass
 
-print("cards: "  + str(test.cards.keys()))
-
+#TODO: player class which the agent will be. make it recieve dealt cards and have play methods.
 
