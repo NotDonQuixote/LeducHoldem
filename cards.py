@@ -18,20 +18,34 @@ class Deck:
         for suit in suits:
             for rank in ranks:
                 card = Card(suit, rank)
-                self.cards[card.__toString__()] = card
+                self.cards.append(card)
                 
         return
 
-class game():
+class Game():
     def __init__(self):
-        self.deck = Deck({})
+        self.deck = Deck([])
         self.deck.generateDeck()
 
-    def deal():
-        pass
+    def deal(self):
+        dealt_Card = random.choice(self.deck.cards)
+        return dealt_Card.__toString__()
+        
+    def refreshdeck(self):
+        self.deck = Deck({})
+        self.deck.generateDeck()
 
 #test
 print(agent.evaluateHand(Card('Hearts', 'Queen')))
 print(agent.evaluateHand(Card('Hearts', 'King')))
+print('/?//////')
+print('Agent csv test: ')
 agent.printcsv
+
+print('\n' + 'Deck test: ')
+testgame = Game()
+print(testgame.deck.cards) #fixme
+print('deal test')
+print('\n')
+print(testgame.deal())
 #TODO: player class which the agent will be. make it recieve dealt cards and have play methods.
