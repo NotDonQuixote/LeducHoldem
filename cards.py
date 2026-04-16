@@ -1,3 +1,6 @@
+import random
+import agent
+
 class Card:
     def __init__ (self, suit, rank):
         self.suit = suit
@@ -27,5 +30,8 @@ class game():
     def deal():
         pass
 
+#test
+print(agent.evaluateHand(Card('Hearts', 'Queen')))
+print(agent.evaluateHand(Card('Hearts', 'King')))
+agent.printcsv
 #TODO: player class which the agent will be. make it recieve dealt cards and have play methods.
-
