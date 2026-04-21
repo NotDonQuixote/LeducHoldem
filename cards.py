@@ -36,16 +36,16 @@ class Game():
         self.deck.generateDeck()
 
 #test
-print(agent.evaluateHand(Card('Hearts', 'Queen')))
-print(agent.evaluateHand(Card('Hearts', 'King')))
-print('/?//////')
+#print(agent.evaluateHand(Card('Hearts', 'Queen')))
+#print(agent.evaluateHand(Card('Hearts', 'King')))
+#print('/?//////')
 print('Agent csv test: ')
-agent.printcsv
+agent.printcsv()
 
-print('\n' + 'Deck test: ')
-testgame = Game()
-print(testgame.deck.cards) #fixme
-print('deal test')
-print('\n')
-print(testgame.deal())
+#print('\n' + 'Deck test: ')
+#testgame = Game()
+#print(testgame.deck.cards) #fixme
+#print('deal test')
+#print('\n')
+#print(testgame.deal())
 #TODO: player class which the agent will be. make it recieve dealt cards and have play methods.
