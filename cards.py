@@ -42,6 +42,11 @@ class Game():
 print('Agent csv test: ')
 agent.printcsv()
 
+print("Write test:")
+agent.writecsv()
+
+print('after write csv test: ')
+agent.printcsv()
 #print('\n' + 'Deck test: ')
 #testgame = Game()
 #print(testgame.deck.cards) #fixme

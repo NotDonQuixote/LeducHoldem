@@ -1,2 +1,3 @@
-Rank, Suit, Rank, River_suit, River_rank, Call, Raise, Bluff, Fold, All_in
-test0, test1, test2, test3, test4, test5, test6, test7, test8, finaltest
+State,Action,Reward
+State1,Action1,Reward1
+State2,Action2,Reward2
