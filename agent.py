@@ -34,4 +34,4 @@ def evaluateHand(card):
 def playHand(hand, q_table):
     pass
     
-#evaluate hand should access the csv as a Q learning algoritm 
+#evaluate hand should access the csv as a Q learning algoritm s
