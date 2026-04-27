@@ -1,6 +1,7 @@
 import csv
 import os
 import random
+from agent_CFR import CFR
 from collections import defaultdict
 
 actions = ['call', 'bet']
@@ -42,34 +43,43 @@ class Node:
 
         return avg_strategy
 
+cfr = CFR(actions=actions, node_class=Node)
 class Agent:
-    def __init__(self, card=None):
+    def __init__(self, strategy_table, card=None):
         self.q_table = {} #delete later
         self.round_count = 0 #Delete 
         self.csv_file = find_file("q_table_csv.csv", 'C://') #delete later if CRF works
         self.load_q_table() #delete later if CFR works
         self.card = card
+        self.strategy_table = strategy_table
     
     def new_card(self, card):
         self.card = card
 
+    def get_strategy(self):
+        table = {}
+        for info_set, node in self.node_map.items():
+            table[info_set] = node.get_average_strategy()
+        return table
 
-    def evaluateHand(self, river):
-        #fold = 0; call = 1; raise_ = 2
-        #TODO: integrate this with the new learnign model
-        if self.card.rank == river.rank:
-            
-            return max(
-                self.get_q_value(
-                self.card.value, any, 'Raise'),
-                self.get_q_value(
-                self.card.value, any, 'Call')
-                )
-        else:
-            pass
-    def playHand(self):
-        pass
+    def playHand(self, river_card, history):
+        info = build_info(self, river_card, history)
 
+        strategy = self.strategy_table.get(info)
+
+        if strategy is None:
+            return random.choice(['call', 'bet'])
+        
+        return self.action(self, strategy)
+    
+    def action(self, strategy):
+        rand = random.random()
+        cumulative_probability = 0.0
+        for action, prob in strategy.items():
+            cumulative_probability += prob
+            if rand <= cumulative_probability:
+                return action
+        return 'call' #just in case
 
 
 def build_info(agent_card, river_card, history):

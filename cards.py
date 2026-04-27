@@ -39,7 +39,7 @@ class Game():
         self.deck.generateDeck()
 
     def round(self, player_1, player_2, round_count = 0):
-        
+        #players can be an agent.
 
         print("Round: " + str(round_count + 1))
         self.refreshdeck()
