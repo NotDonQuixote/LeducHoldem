@@ -43,15 +43,12 @@ class Node:
 
         return avg_strategy
 
-cfr = CFR(actions=actions, node_class=Node)
 class Agent:
     def __init__(self, strategy_table, card=None):
-        self.q_table = {} #delete later
-        self.round_count = 0 #Delete 
-        self.csv_file = find_file("q_table_csv.csv", 'C://') #delete later if CRF works
-        self.load_q_table() #delete later if CFR works
         self.card = card
         self.strategy_table = strategy_table
+        cfr = CFR(actions=actions, node_class=Node)
+        self.cfr = cfr.cfr
     
     def new_card(self, card):
         self.card = card
@@ -86,75 +83,3 @@ def build_info(agent_card, river_card, history):
     private_rank = agent_card.rank 
     river_rank = river_card.rank if river_card is not None else "None"
     return f"{private_rank}|{river_rank}|{history}"
-
-def find_file(filename, search_path):
-   for root, dirs, files in os.walk(search_path):
-       if filename in files:
-           return os.path.join(root, filename)
-   return None
-# finds the file wherever it is in case the submission messes up the path.
-def writecsv():
-    #the cards will be a linear list of integers going up in rank and value
-    '''
-    1 - Jack of Hearts
-    2 - Jack of Spades
-    3 - Queen of Hearts
-    4 - Queen of Spades
-    5 - King of Hearts
-    6 - King of Spades
-    '''
-    with open (find_file("q_table_csv.csv", 'C://'), 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([1, "State", "Action", "Reward"])
-        writer.writerow([2, "State1", "Action1", "Reward1"])
-        writer.writerow([3, "State2", "Action2", "Reward2"])
-
-def printcsv():
-    with open (find_file("q_table_csv.csv", 'C://'), 'r') as file:
-
-        reader = csv.reader(file)
-        for row in reader:
-            print(row)
-            #what am I doing wrong :<
-        
-#the decision maker will use CounterFactual regret minimization. 
-#TODO: make a game tree and CFR algorithm then remove the Q-table approach
-
-
-class DeleteLater:
-    
-    def load_q_table(self):
-        if self.csv_file and os.path.exists(self.csv_file):
-            with open(self.csv_file, 'r') as file:
-                reader = csv.reader(file)
-                next(reader)  # Skip header
-                for row in reader:
-                    if len(row) >= 3:
-                        state, action, reward = row[0], row[1], row[2]
-                        if state not in self.q_table:
-                            self.q_table[state] = {}
-                        self.q_table[state][action] = float(reward)
-    
-    def update_q_table(self, state, action, reward):
-        if state not in self.q_table:
-            self.q_table[state] = {}
-        self.q_table[state][action] = reward
-        self.round_count += 1
-        
-        # Save to CSV every 200 rounds
-        if self.round_count % 200 == 0:
-            self.save_q_table()
-    
-    def save_q_table(self):
-        if self.csv_file:
-            with open(self.csv_file, 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(["State", "Action", "Reward"])
-                for state, actions in self.q_table.items():
-                    for action, reward in actions.items():
-                        writer.writerow([state, action, reward])
-    
-    def get_q_value(self, state, action):
-        if state in self.q_table and action in self.q_table[state]:
-            return self.q_table[state][action]
-        return 0.0

@@ -121,34 +121,34 @@ class Game():
                 else:
                     return 2
        
-def print_Tests():
-    #test
-    #print(agent.evaluateHand(Card('Hearts', 'Queen')))
-    #print(agent.evaluateHand(Card('Hearts', 'King')))
-    #print('/?//////')
-    print('deck test ')
-    print('\n')
-    tst1 = Game()
+def train_cfr(agent, iterations=10000, deck=None, ranks=None):
+    
+    util = 0
+    if deck is None:
+        deck = [1,2,3,4,5,6]  # fallback deck
+    for _ in range(iterations):
+        cards = random.sample(deck, 3)
+        util += agent.cfr(cards, "", 1, 1, pot=2, ranks=ranks)
 
-    for x in tst1.deck.cards:
-        print(x.suit)
+    print("Average game value:", util / iterations)
 
-    print("deal test")
-    print(tst1.deal().__toString__())
-    print("\n" + 'deck after dealt card: ')
-    for x in tst1.deck.cards:
-        print(x.suit)
-    print('Agent csv test: ')
-    agent.printcsv()
+    for info_set in agent.node_map:
+        print(info_set, agent.node_map[info_set].get_average_strategy())
 
-    #print("Write test:")
-    #agent.writecsv()
 
-    #print('after write csv test: ')
-    #agent.printcsv()
-    #print('\n' + 'Deck test: ')
-    #testgame = Game()
-    #print(testgame.deck.cards) #fixme
-    #print('deal test')
-    #print('\n')
-    #print(testgame.deal())
+def main():
+    game = Game()
+    player_1 = agent.Agent(strategy_table={})
+    player_2 = agent.Agent(strategy_table={})
+    print("Test: player 1 is an untrained agent, player 2 is a trained agent (1k instances).")
+
+    train_cfr(player_2, iterations=1000, deck=Deck([]).generateDeck(), ranks=['Jack', 'Queen', 'King'])
+
+    for i in range(5):
+        winner = game.round(player_1, player_2, round_count=i)
+        if winner:
+            print(f"{winner} wins round {i + 1}!\n")
+        else:
+            print(f"Round {i + 1} ended in a tie.\n")
+
+main()
