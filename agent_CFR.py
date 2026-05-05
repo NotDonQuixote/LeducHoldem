@@ -46,13 +46,18 @@ class CFR:
                 return avg_strategy
         return Node
 
-    def is_terminal(self, history):
-        # simple terminal logic
+    def is_terminal(self, history, max_length=10):
+        # Terminal
         if history.endswith("f"):
             return True
+        # Terminal if there have been two bets
         if history.count('b') >= 2:
             return True
+        # Terminal: showdown
         if len(history) >= 2 and history[-2:] == "cc":
+            return True
+        # Safeguard:
+        if len(history) >= max_length: 
             return True
         return False
 
