@@ -44,7 +44,8 @@ class Node:
         return avg_strategy
 
 class Agent:
-    def __init__(self, strategy_table, card=None):
+    def __init__(self, name, strategy_table, card=None):
+        self.name = name
         self.card = card
         self.strategy_table = strategy_table
         cfr = CFR(actions=actions, node_class=Node)
@@ -61,7 +62,7 @@ class Agent:
         return table
 
     def playHand(self, river_card, history):
-        info = build_info(self, river_card, history)
+        info = build_info(self.card, river_card, history)
 
         strategy = self.strategy_table.get(info)
 
@@ -81,6 +82,7 @@ class Agent:
 
 
 def build_info(agent_card, river_card, history):
+    print("agent card in build info: " + str(agent_card))
     private_rank = agent_card.rank 
     river_rank = river_card.rank if river_card is not None else "None"
     return f"{private_rank}|{river_rank}|{history}"

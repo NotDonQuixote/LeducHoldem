@@ -49,21 +49,25 @@ class Game():
         river_card = self.deal()
         
         # Deal cards to players
-        print(f"{player_1.name} has: {card_p1}")
-        print(f"{player_2.name} has: {card_p2}")
-        print(f"River card is: {river_card}")
+        print(f"player 1 has: {card_p1.__toString__()}")
+        print(f"player 2 has: {card_p2.__toString__()}")
+        print(f"River card is: {river_card.__toString__()}")
         
         # Get actions from players
         valid_actions = ['call', 'fold', 'raise']
         
         # Player 1's turn
-        action_p1 = self._get_player_action(player_1, valid_actions)
+        player_1.new_card(card_p1)
+        action_p1 = self._get_player_action(player_1, valid_actions) if not isinstance(
+            player_1, agent.Agent) else self.get_agent_action(player_1, river_card, "")
         if action_p1 == 'fold':
             print(f"{player_1.name} folded. {player_2.name} wins!")
             return player_2
         
         # Player 2's turn
-        action_p2 = self._get_player_action(player_2, valid_actions)
+        player_2.new_card(card_p2)
+        action_p2 = self._get_player_action(player_2, valid_actions) if not isinstance(
+            player_2, agent.Agent) else self.get_agent_action(player_2, river_card, action_p1)
         if action_p2 == 'fold':
             print(f"{player_2.name} folded. {player_1.name} wins!")
             return player_1
@@ -79,6 +83,9 @@ class Game():
                 return action
             else:
                 print(f"Invalid action. Please enter one of: {', '.join(valid_actions)}") 
+    
+    def get_agent_action(self, agent, river_card, history):
+        return agent.playHand(river_card, history)
 
     def round_helper(self, card_1, card_2, river_card):
         """
@@ -134,25 +141,58 @@ def train_cfr(agent, iterations=10000, deck=None, ranks=None):
 
     print("Average game value:", util / iterations)
 
+'''  this is the strategy table. Uncomment to print the strategy table after training.
     for info_set in agent.node_map:
         print(info_set, agent.node_map[info_set].get_average_strategy())
+'''
 
-
-def main():
+def agentvagent(round_count= 5):
     game = Game()
-    player_1 = agent.Agent(strategy_table={})
-    player_2 = agent.Agent(strategy_table={})
+    player_1 = agent.Agent(name="Agent 1", strategy_table={})
+    player_2 = agent.Agent(name="Agent 2", strategy_table={})
     print("Test: player 1 is an untrained agent, player 2 is a trained agent (1k instances).")
     deck = Deck([])
     deck.generateDeck()
     print("Test deck: " + str(deck.cards))
     train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
 
-    for i in range(5):
+    for i in range(round_count):
         winner = game.round(player_1, player_2, round_count=i)
         if winner:
             print(f"{winner} wins round {i + 1}!\n")
         else:
             print(f"Round {i + 1} ended in a tie.\n")
+
+def playervagent(round_count=5):
+    game = Game()
+    player_1 = agent.Agent(name=input("Enter your name: "), strategy_table={})
+    player_2 = agent.Agent(name="Trained Agent", strategy_table={})
+    print("Test: " + player_1.name + " is a human player, player 2 is a trained agent (1k instances).")
+    deck = Deck([])
+    deck.generateDeck()
+    print("Test deck: " + str(deck.cards))
+    train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
+
+    for i in range(round_count):
+        winner = game.round(player_1, player_2, round_count=i)
+        if winner:
+            print(f"{winner} wins round {i + 1}!\n")
+        else:
+            print(f"Round {i + 1} ended in a tie.\n")
+
+def main():
+    print("Welcome to Leduc Hold'em!")
+    while True:
+        mode = input("Enter '1' to play against a trained agent, '2' for agent vs agent, or 'q' to quit: ").strip()
+        if mode == '1':
+            print("Single player mode is not implemented yet. Please choose another option.")
+        elif mode == '2':
+            round_count = int(input("Enter the number of rounds to play: "))
+            agentvagent(round_count)
+        elif mode.lower() == 'q':
+            print("Thanks for playing!")
+            break
+        else:
+            print("Invalid option. Please enter '1', '2', or 'q'.")
 
 main()
