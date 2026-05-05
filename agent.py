@@ -49,6 +49,7 @@ class Agent:
         self.strategy_table = strategy_table
         cfr = CFR(actions=actions, node_class=Node)
         self.cfr = cfr.cfr
+        self.node_map = cfr.node_map
     
     def new_card(self, card):
         self.card = card

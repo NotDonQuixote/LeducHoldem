@@ -32,10 +32,11 @@ class Game():
     def deal(self):
         index = random.randrange(len(self.deck.cards))
         dealt_Card = self.deck.cards.pop(index)
+        print("dealt Card: " + dealt_Card.__toString__())
         return dealt_Card
         
     def refreshdeck(self):
-        self.deck.clear()
+        self.deck.cards.clear()
         self.deck.generateDeck()
 
     def round(self, player_1, player_2, round_count = 0):
@@ -125,9 +126,10 @@ def train_cfr(agent, iterations=10000, deck=None, ranks=None):
     
     util = 0
     if deck is None:
-        deck = [1,2,3,4,5,6]  # fallback deck
+        fallback_deck = Deck([]) 
+        fallback_deck.generateDeck() # fallback deck
     for _ in range(iterations):
-        cards = random.sample(deck, 3)
+        cards = random.sample(deck.cards, 3)
         util += agent.cfr(cards, "", 1, 1, pot=2, ranks=ranks)
 
     print("Average game value:", util / iterations)
@@ -141,8 +143,10 @@ def main():
     player_1 = agent.Agent(strategy_table={})
     player_2 = agent.Agent(strategy_table={})
     print("Test: player 1 is an untrained agent, player 2 is a trained agent (1k instances).")
-
-    train_cfr(player_2, iterations=1000, deck=Deck([]).generateDeck(), ranks=['Jack', 'Queen', 'King'])
+    deck = Deck([])
+    deck.generateDeck()
+    print("Test deck: " + str(deck.cards))
+    train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
 
     for i in range(5):
         winner = game.round(player_1, player_2, round_count=i)

@@ -70,12 +70,19 @@ class CFR:
         # showdown
         p1, p2, public = cards
         def hand_strength(card, public):
-            if ranks is None:
+            if card.rank is None:
                 # fallback: treat card as int
                 return 10 + card if card == public else card
             if card == public:
+                #print("for debugging: card is " + str(card) + " and public is " + str(public))
+                #print('\n')
+                #print("ranks list is " + str(ranks))
                 return 10 + ranks.index(card)
-            return ranks.index(card)
+            #print("for debugging: card is " + str(card) + " and public is " + str(public))
+            #print('\n')
+            #print("ranks list is " + str(ranks))
+
+            return ranks.index(card.rank) #now a card object
 
         s1 = hand_strength(p1, public)
         s2 = hand_strength(p2, public)
@@ -93,6 +100,8 @@ class CFR:
         player = len(history) % 2
 
         if self.is_terminal(history):
+            #print("Function: is_terminal, returning payoff for cards"+ str(cards))
+            #print("test: cards using value function to call from deck: " + str())
             return self.payoff(cards, history, pot, ranks)
 
         card = cards[player]
