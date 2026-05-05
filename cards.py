@@ -185,7 +185,8 @@ def main():
     while True:
         mode = input("Enter '1' to play against a trained agent, '2' for agent vs agent, or 'q' to quit: ").strip()
         if mode == '1':
-            print("Single player mode is not implemented yet. Please choose another option.")
+            round_count = int(input("Enter the number of rounds to play: "))
+            playervagent(round_count)
         elif mode == '2':
             round_count = int(input("Enter the number of rounds to play: "))
             agentvagent(round_count)
