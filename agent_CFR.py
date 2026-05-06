@@ -4,7 +4,7 @@ from collections import defaultdict
 class CFR:
     def __init__(self, actions=None, node_class=None):
         # Use actions from agent.py if provided, else default
-        self.actions = actions if actions is not None else ['call', 'bet']
+        self.actions = actions if actions is not None else ['call', 'bet', 'fold']
         # Use Node from agent.py if provided, else fallback
         self.Node = node_class if node_class is not None else self._default_node_class()
         self.node_map = {}

@@ -24,6 +24,14 @@ class Deck:
                 
         return
 
+class Player:
+    def __init__(self, name, card=None):
+        self.name = name
+        self.card = card
+
+    def new_card(self, card):
+        self.card = card
+
 class Game():
     def __init__(self):
         self.deck = Deck([])
@@ -32,7 +40,7 @@ class Game():
     def deal(self):
         index = random.randrange(len(self.deck.cards))
         dealt_Card = self.deck.cards.pop(index)
-        print("dealt Card: " + dealt_Card.__toString__())
+        #print("dealt Card: " + dealt_Card.__toString__())
         return dealt_Card
         
     def refreshdeck(self):
@@ -40,40 +48,66 @@ class Game():
         self.deck.generateDeck()
 
     def round(self, player_1, player_2, round_count = 0):
-        #players can be an agent.
+        #check if player is true then use input instead of agent action.
 
         print("Round: " + str(round_count + 1))
         self.refreshdeck()
         card_p1 = self.deal()
         card_p2 = self.deal()
         river_card = self.deal()
-        
+
         # Deal cards to players
         print(f"player 1 has: {card_p1.__toString__()}")
         print(f"player 2 has: {card_p2.__toString__()}")
         print(f"River card is: {river_card.__toString__()}")
-        
-        # Get actions from players
-        valid_actions = ['call', 'fold', 'raise']
-        
-        # Player 1's turn
+
+        valid_actions = ['call', 'bet', 'fold']
+        history = ""
+
+        # First betting round
         player_1.new_card(card_p1)
-        action_p1 = self._get_player_action(player_1, valid_actions) if not isinstance(
-            player_1, agent.Agent) else self.get_agent_action(player_1, river_card, "")
+        if not isinstance(player_1, agent.Agent):
+            action_p1 = self._get_player_action(player_1, valid_actions)
+        else:
+            action_p1 = self.get_agent_action(player_1, river_card, history)
+        history += action_p1 + "-"
         if action_p1 == 'fold':
             print(f"{player_1.name} folded. {player_2.name} wins!")
             return player_2
-        
-        # Player 2's turn
+
         player_2.new_card(card_p2)
-        action_p2 = self._get_player_action(player_2, valid_actions) if not isinstance(
-            player_2, agent.Agent) else self.get_agent_action(player_2, river_card, action_p1)
+        if not isinstance(player_2, agent.Agent):
+            action_p2 = self._get_player_action(player_2, valid_actions)
+        else:
+            action_p2 = self.get_agent_action(player_2, river_card, history)
+        history += action_p2 + "-"
         if action_p2 == 'fold':
             print(f"{player_2.name} folded. {player_1.name} wins!")
             return player_1
-        
+
+        # Second betting round
+        print("\nSecond betting round:")
+        if not isinstance(player_1, agent.Agent):
+            action_p1_2 = self._get_player_action(player_1, valid_actions)
+        else:
+            action_p1_2 = self.get_agent_action(player_1, river_card, history)
+        history += action_p1_2 + "-"
+        if action_p1_2 == 'fold':
+            print(f"{player_1.name} folded. {player_2.name} wins!")
+            return player_2
+
+        if not isinstance(player_2, agent.Agent):
+            action_p2_2 = self._get_player_action(player_2, valid_actions)
+        else:
+            action_p2_2 = self.get_agent_action(player_2, river_card, history)
+        history += action_p2_2 + "-"
+        if action_p2_2 == 'fold':
+            print(f"{player_2.name} folded. {player_1.name} wins!")
+            return player_1
+
         # If both players call (or raise), compare hands
-        print(f"\nShowdown - {player_1.name}: {action_p1}, {player_2.name}: {action_p2}")
+        print(f"\nShowdown - {player_1.name}: {action_p1}, {player_2.name}: {action_p2}, {player_1.name} (2nd): {action_p1_2}, {player_2.name} (2nd): {action_p2_2}")
+        # Optionally, you can return the history for further use
         return None  # Return winner determination logic
     
     def _get_player_action(self, player, valid_actions):
@@ -137,7 +171,7 @@ def train_cfr(agent, iterations=10000, deck=None, ranks=None):
         fallback_deck.generateDeck() # fallback deck
     for _ in range(iterations):
         cards = random.sample(deck.cards, 3)
-        util += agent.cfr(cards, "", 1, 1, pot=2, ranks=ranks)
+        util += agent.cfr(cards, "", 1, 1, pot=4, ranks=ranks)
 
     print("Average game value:", util / iterations)
 
@@ -159,24 +193,24 @@ def agentvagent(round_count= 5):
     for i in range(round_count):
         winner = game.round(player_1, player_2, round_count=i)
         if winner:
-            print(f"{winner} wins round {i + 1}!\n")
+            print(f"{winner.name} wins round {i + 1}!\n")
         else:
             print(f"Round {i + 1} ended in a tie.\n")
 
 def playervagent(round_count=5):
     game = Game()
-    player_1 = agent.Agent(name=input("Enter your name: "), strategy_table={})
+    player_1 = Player(name=input("Enter your name: "), card=None)
     player_2 = agent.Agent(name="Trained Agent", strategy_table={})
     print("Test: " + player_1.name + " is a human player, player 2 is a trained agent (1k instances).")
     deck = Deck([])
     deck.generateDeck()
-    print("Test deck: " + str(deck.cards))
+    #print("Test deck: " + str(deck.cards))
     train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
 
     for i in range(round_count):
         winner = game.round(player_1, player_2, round_count=i)
         if winner:
-            print(f"{winner} wins round {i + 1}!\n")
+            print(f"{winner.name} wins round {i + 1}!\n")
         else:
             print(f"Round {i + 1} ended in a tie.\n")
 
@@ -197,3 +231,4 @@ def main():
             print("Invalid option. Please enter '1', '2', or 'q'.")
 
 main()
+#TODO: fix the round not deciding winners with pairs. 

@@ -4,7 +4,7 @@ import random
 from agent_CFR import CFR
 from collections import defaultdict
 
-actions = ['call', 'bet']
+actions = ['call', 'bet', 'fold']
 class Node:
     def __init__(self, info_set):
         self.info_set = info_set
@@ -67,7 +67,7 @@ class Agent:
         strategy = self.strategy_table.get(info)
 
         if strategy is None:
-            return random.choice(['call', 'bet'])
+            return random.choice(['call', 'bet', 'fold'])
         
         return self.action(self, strategy)
     
@@ -76,13 +76,14 @@ class Agent:
         cumulative_probability = 0.0
         for action, prob in strategy.items():
             cumulative_probability += prob
+            print("Test: cumulative probability: " + cumulative_probability)
             if rand <= cumulative_probability:
                 return action
         return 'call' #just in case
 
 
 def build_info(agent_card, river_card, history):
-    print("agent card in build info: " + str(agent_card))
+    #print("agent card in build info: " + str(agent_card)) 
     private_rank = agent_card.rank 
     river_rank = river_card.rank if river_card is not None else "None"
     return f"{private_rank}|{river_rank}|{history}"
