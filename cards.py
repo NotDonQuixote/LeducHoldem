@@ -108,7 +108,7 @@ class Game():
         # If both players call (or raise), compare hands
         print(f"\nShowdown - {player_1.name}: {action_p1}, {player_2.name}: {action_p2}, {player_1.name} (2nd): {action_p1_2}, {player_2.name} (2nd): {action_p2_2}")
         # Optionally, you can return the history for further use
-        return None  # Return winner determination logic
+        return self.round_helper(player_1, player_2, card_p1, card_p2, river_card)  # Return winner determination logic
     
     def _get_player_action(self, player, valid_actions):
         while True:
@@ -121,9 +121,9 @@ class Game():
     def get_agent_action(self, agent, river_card, history):
         return agent.playHand(river_card, history)
 
-    def round_helper(self, card_1, card_2, river_card):
+    def round_helper(self, player_1, player_2, card_1, card_2, river_card):
         """
-        Returns: 1 if player 1 wins, 2 if player 2 wins, 0 if tie.
+        Returns the winning player
         """
         rank_order = {'King': 3, 'Queen': 2, 'Jack': 1}
         suit_order = {'Spades': 2, 'Hearts': 1}
@@ -134,15 +134,18 @@ class Game():
         
         # If only one player has a pair, they win
         if p1_has_pair and not p2_has_pair:
-            return 1
+            print(f"{player_1.name} has a pair")
+            return player_1
         elif p2_has_pair and not p1_has_pair:
-            return 2
+            print(f"{player_2.name} has a pair")
+            return player_2
         # If both have pairs (same rank), compare by suit
         elif p1_has_pair and p2_has_pair:
+            print(f"Both players have a pair")
             if suit_order[card_1.suit] > suit_order[card_2.suit]:
-                return 1
+                return player_1
             elif suit_order[card_2.suit] > suit_order[card_1.suit]:
-                return 2
+                return player_2
             else:
                 return 0  # Tie
         # No pairs, compare high cards
@@ -153,15 +156,15 @@ class Game():
             
             # Compare best cards by rank
             if rank_order[p1_best.rank] > rank_order[p2_best.rank]:
-                return 1
+                return player_1
             elif rank_order[p2_best.rank] > rank_order[p1_best.rank]:
-                return 2
+                return player_2
             else:
                 # Same rank, compare by suit
                 if suit_order[p1_best.suit] > suit_order[p2_best.suit]:
-                    return 1
+                    return player_1
                 else:
-                    return 2
+                    return player_2
        
 def train_cfr(agent, iterations=10000, deck=None, ranks=None):
     
@@ -184,11 +187,11 @@ def agentvagent(round_count= 5):
     game = Game()
     player_1 = agent.Agent(name="Agent 1", strategy_table={})
     player_2 = agent.Agent(name="Agent 2", strategy_table={})
-    print("Test: player 1 is an untrained agent, player 2 is a trained agent (1k instances).")
+    print("Test: player 1 is an untrained agent, player 2 is a trained agent (2k instances).")
     deck = Deck([])
     deck.generateDeck()
     print("Test deck: " + str(deck.cards))
-    train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
+    train_cfr(player_2, iterations=2000, deck=deck, ranks=['Jack', 'Queen', 'King'])
 
     for i in range(round_count):
         winner = game.round(player_1, player_2, round_count=i)
@@ -201,11 +204,11 @@ def playervagent(round_count=5):
     game = Game()
     player_1 = Player(name=input("Enter your name: "), card=None)
     player_2 = agent.Agent(name="Trained Agent", strategy_table={})
-    print("Test: " + player_1.name + " is a human player, player 2 is a trained agent (1k instances).")
+    print("Test: " + player_1.name + " is a human player, player 2 is a trained agent (2k instances).")
     deck = Deck([])
     deck.generateDeck()
     #print("Test deck: " + str(deck.cards))
-    train_cfr(player_2, iterations=1000, deck=deck, ranks=['Jack', 'Queen', 'King'])
+    train_cfr(player_2, iterations=2000, deck=deck, ranks=['Jack', 'Queen', 'King'])
 
     for i in range(round_count):
         winner = game.round(player_1, player_2, round_count=i)
@@ -231,4 +234,3 @@ def main():
             print("Invalid option. Please enter '1', '2', or 'q'.")
 
 main()
-#TODO: fix the round not deciding winners with pairs. 
