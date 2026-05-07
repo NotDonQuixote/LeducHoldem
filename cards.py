@@ -58,7 +58,7 @@ class Game():
 
         # Deal cards to players
         print(f"player 1 has: {card_p1.__toString__()}")
-        print(f"player 2 has: {card_p2.__toString__()}")
+        print(f"player 2 has: {card_p2.__toString__()}") if isinstance(player_1, agent.Agent) else print("player 2 has: [hidden]")
         print(f"River card is: {river_card.__toString__()}")
 
         valid_actions = ['call', 'bet', 'fold']
@@ -202,9 +202,22 @@ def agentvagent(round_count= 5):
 
 def playervagent(round_count=5):
     game = Game()
+    print("Would you like to play against the default agent or a custom trained agent?")
+    choice = input("Enter 'default' for default agent or 'custom' for custom trained agent: ").strip().lower()
+    if choice == 'custom':
+        custom_agent = agent.Agent(name="Custom Trained Agent", strategy_table={})
+        deck = Deck([])
+        deck.generateDeck()
+        train_cfr(custom_agent, iterations=int(input(
+            "Please specify the number of training iterations for the custom agent (e.g., 1000): ")
+            ), deck=deck, ranks=['Jack', 'Queen', 'King'])
+        print("Training custom agent...")
+        player_2 = custom_agent
+
+
     player_1 = Player(name=input("Enter your name: "), card=None)
     player_2 = agent.Agent(name="Trained Agent", strategy_table={})
-    print("Test: " + player_1.name + " is a human player, player 2 is a trained agent (2k instances).")
+    print("Test: " + player_1.name + " is a human player, player 2 is a trained agent.")
     deck = Deck([])
     deck.generateDeck()
     #print("Test deck: " + str(deck.cards))
