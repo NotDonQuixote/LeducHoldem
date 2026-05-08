@@ -246,4 +246,5 @@ def main():
         else:
             print("Invalid option. Please enter '1', '2', or 'q'.")
 
-main()
+if __name__ == "__main__":
+    main()
